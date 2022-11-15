@@ -18,7 +18,7 @@ class Greeter:
         current_hour = self.clock.current_hour()
         if 6 <= current_hour < 12:
             return "Good morning"
-        if 12 <= current_hour <= 19:
+        if 12 <= current_hour <= 20:
             return "Good afternoon"
         if current_hour > 20 or current_hour < 6:
             return "Good night"
