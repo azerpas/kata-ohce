@@ -35,6 +35,9 @@ def test_greeting_never_returns_none():
         assert g.greet() is not None
 
 class MockInteractor:
+    def __init__(self) -> None:
+        self.messages = []
+
     def set_input(self, input):
         self.input = input
 
@@ -43,6 +46,7 @@ class MockInteractor:
 
     def print_message(self, message):
         print(message)
+        self.messages.append(message)
         self.input = "quit"
 
 def test_ohce_main_loop():
@@ -58,7 +62,7 @@ def test_ohce_main_loop():
     - That was a palindrome!
     """
     ui = UI(MockInteractor)
-    
+
     ui.interactor.set_input("hello")
     f = io.StringIO()
     with redirect_stdout(f):
@@ -74,4 +78,27 @@ def test_ohce_main_loop():
     assert "oto" in out
     assert "That was a palindrome!" in out
 
-    
+def test_ohce_main_loop_v2():
+    """
+    Given the following inputs:
+    - hello
+    - oto
+    - quit
+
+    Check that the following messages are printed:
+    - olleh
+    - oto
+    - That was a palindrome!
+    """
+    ui = UI(MockInteractor)
+
+    ui.interactor.set_input("hello")
+    ui.main_loop()
+    assert "olleh" in ui.interactor.messages
+
+    ui.interactor.messages = []
+
+    ui.interactor.set_input("oto")
+    ui.main_loop()
+    assert "oto" in ui.interactor.messages
+    assert "That was a palindrome!" in ui.interactor.messages
