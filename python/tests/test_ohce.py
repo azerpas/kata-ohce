@@ -1,6 +1,10 @@
 import pytest
 
 from ohce.greeter import Greeter
+from ohce.ui import UI
+
+import io
+from contextlib import redirect_stdout
 
 class MockClock:
     def __init__(self) -> None:
@@ -30,6 +34,16 @@ def test_greeting_never_returns_none():
         g.clock.set_current_hour(i)
         assert g.greet() is not None
 
+class MockInteractor:
+    def set_input(self, input):
+        self.input = input
+
+    def read_input(self):
+        return self.input
+
+    def print_message(self, message):
+        print(message)
+        self.input = "quit"
 
 def test_ohce_main_loop():
     """
@@ -43,4 +57,21 @@ def test_ohce_main_loop():
     - oto
     - That was a palindrome!
     """
-    pytest.fail("TODO")
+    ui = UI(MockInteractor)
+    
+    ui.interactor.set_input("hello")
+    f = io.StringIO()
+    with redirect_stdout(f):
+        ui.main_loop()
+    out = f.getvalue()
+    assert "olleh" in out
+
+    ui.interactor.set_input("oto")
+    f = io.StringIO()
+    with redirect_stdout(f):
+        ui.main_loop()
+    out = f.getvalue()
+    assert "oto" in out
+    assert "That was a palindrome!" in out
+
+    
